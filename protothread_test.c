@@ -86,15 +86,22 @@ yield_thr(env_t const env)
     return PT_DONE ;
 }
 
+static yield_context_t *
+test_yield_create_thr(protothread_t pt)
+{
+    yield_context_t * const c = malloc(sizeof(*c)) ;
+    c->i = -1 ;     /* invalid value */
+    pt_create(pt, &c->pt_thread, yield_thr, c) ;
+    return c;
+}
+
 static void
 test_yield(void)
 {
     protothread_t const pt = protothread_create() ;
-    yield_context_t * const c = malloc(sizeof(*c)) ;
     int i ;
 
-    c->i = -1 ;     /* invalid value */
-    pt_create(pt, &c->pt_thread, yield_thr, c) ;
+    yield_context_t * const c = test_yield_create_thr(pt) ;
 
     /* it hasn't run yet at all, make it reach the yield */
     protothread_run(pt) ;
